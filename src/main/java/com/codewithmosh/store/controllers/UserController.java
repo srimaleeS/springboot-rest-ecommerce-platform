@@ -2,6 +2,7 @@ package com.codewithmosh.store.controllers;
 
 import com.codewithmosh.store.dtos.UserDto;
 import com.codewithmosh.store.entities.User;
+import com.codewithmosh.store.mappers.UserMapper;
 import com.codewithmosh.store.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,10 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @GetMapping
     public Iterable<UserDto> getAllUsers(){
-        return userRepository.findAll().stream().map(user -> new UserDto(user.getId(), user.getName(), user.getEmail()))
+        return userRepository.findAll()
+                .stream()
+//                .map(user -> new UserDto(user.getId(), user.getName(), user.getEmail()))
+                .map(user -> userMapper.toDto(user)) //Use the UserMapper to convert User entities to UserDto objects instead of mapping it manually, can also be written as map(userMapper::toDto)
                 .toList(); //Convert the list of User entities to a list of UserDto objects
     }
 
@@ -35,7 +40,6 @@ public class UserController {
             return ResponseEntity.notFound().build(); //Return 404 Not Found if user is not found
         }
 //        return new ResponseEntity<>(user,HttpStatus.OK);
-        var userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
-        return ResponseEntity.ok(userDto); //Return 200 OK with the user object if found
+        return ResponseEntity.ok(userMapper.toDto(user)); //Return 200 OK with the user object if found
     }
 }
