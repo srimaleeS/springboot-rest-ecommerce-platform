@@ -6,12 +6,12 @@ import com.codewithmosh.store.mappers.UserMapper;
 import com.codewithmosh.store.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 //Restfull API to fetch users from the db and return them in JSON format
 @RestController
@@ -22,8 +22,12 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
-    public Iterable<UserDto> getAllUsers(){
-        return userRepository.findAll()
+    public Iterable<UserDto> getAllUsers(
+        @RequestParam(required = false, defaultValue = "", name = "sort") String sort
+    ){
+        if (!Set.of("name","email").contains(sort))
+            sort= "name"; //Default sort by name if the sort parameter is not valid
+        return userRepository.findAll(Sort.by(sort))
                 .stream()
 //                .map(user -> new UserDto(user.getId(), user.getName(), user.getEmail()))
                 .map(user -> userMapper.toDto(user)) //Use the UserMapper to convert User entities to UserDto objects instead of mapping it manually, can also be written as map(userMapper::toDto)

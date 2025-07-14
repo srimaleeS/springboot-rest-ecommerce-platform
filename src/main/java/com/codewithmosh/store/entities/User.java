@@ -44,8 +44,10 @@ public class User {
         address.setUser(null);
     }
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private Profile profile;
+//    The console window will only show the SQL query related to fetching the users now Hibernate: select u1_0.id,u1_0.email,u1_0.name,u1_0.password from users u1_0 order by u1_0.name
+//    Instead of lines like: Hibernate: select p1_0.id,p1_0.bio,p1_0.date_of_birth,p1_0.loyalty_points,p1_0.phone_number from profiles p1_0 where p1_0.id=?
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+//    private Profile profile;
 
     @ManyToMany
     @JoinTable(
